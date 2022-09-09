@@ -1,0 +1,59 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "AI Powered Sidekick";
+}
+@section Head{
+<style>
+    video {
+        width: 30%;
+        border-radius: 5px;
+        border: 1px solid black;
+    }
+</style>
+}
+
+
+<title>Video+Screen recording using RecordRTC</title>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-1">
+            <button id="loadScreen">Select Background</button>
+
+            <button id="record" disabled>Start Recording</button>
+            <div id="pauseStat">Not Paused</div>
+        </div>
+        <div class="col-11">
+            <canvas id="scanvas" width="1920px" height="1080px" style="width: 100%;height:90vh"></canvas>
+
+            <video id="webcam" width="640" height="480" style="display:none;width:100%" controls autoplay
+                playsinline></video>
+            <video id="output-video" width="320px" height="180px" style="display:none" controls></video>
+            <video id="svideohidden" width="3072px" height="1920px" style="display: none;width:100%;"></video>
+            <canvas id="canvasCam" width="640px" height="480px" style="display: none;"></canvas>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        var revaikey="@ViewData["RevAIKey"]";
+    </script>
+<script src="https://unpkg.com/@@tensorflow/tfjs-core@2.1.0/dist/tf-core.js"></script>
+<script src="https://unpkg.com/@@tensorflow/tfjs-converter@2.1.0/dist/tf-converter.js"></script>
+
+<!-- You must explicitly require a TF.js backend if you're not using the tfs union bundle. -->
+<script src="https://unpkg.com/@@tensorflow/tfjs-backend-webgl@3.9.0/dist/tf-backend-webgl.min.js"></script>
+<script type="text/javascript" src="~/js/compatibility.js"></script>
+
+@* <script src="~/js/aiagent.js"></script> *@
+<script src="~/js/bundle.js"></script>
+
+<script src="~/js/fabric.js"></script>
+
+
+<script src="~/js/videoScripts.js" asp-append-version="true"></script>
+
+}

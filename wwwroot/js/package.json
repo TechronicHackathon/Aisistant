@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "get-user-media-promise": "^1.1.4",
+    "mic": "^2.1.2",
+    "microphone-stream": "^6.0.1",
+    "revai-node-sdk": "^3.5.1",
+    "websocket": "^1.0.34"
+  }
+}
