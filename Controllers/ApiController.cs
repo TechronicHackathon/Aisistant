@@ -75,19 +75,23 @@ public class ApiController : ControllerBase
     retry:
         var keywordsList = await cohereAPI.GetKeywords(String.Join('\n', relevantParagraph.Select(st => st.chatMessage)));
         var article = await wikiAPI.GetArticleFromSearch(keywordsList);
-        if (article == null)
+        if (article.Item1 == null)
         {
             retries++;
             if (retries > 3) return new JsonResult(new { status = "Failed" });
             goto retry;
 
         }
-        var parsedDoc = await wikiAPI.QDParser(article.Split("\n=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries), "Summary", 0, 0, new Dictionary<string, string>());
+        var parsedDoc = await wikiAPI.QDParser(article.Item1.Split("\n=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries), "Summary", 0, 0, new Dictionary<string, string>());
         //var allMessages = dBContext.SessionTranscript.ToList();
-
+        var mostSimilarKey = await cohereAPI.FindMostSimilarPhrase(keywordsList, parsedDoc.Keys.ToList());
+        var summarizedText = await cohereAPI.GetSummary(parsedDoc[mostSimilarKey]);
         var ret = new
         {
-            status = "Logged"
+            type = "Summary",
+            title = article.Item2,
+            key = mostSimilarKey,
+            text = summarizedText
         };
 
         return new JsonResult(ret);

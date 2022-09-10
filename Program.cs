@@ -71,7 +71,7 @@ Thread t = new Thread(new ThreadStart(async () =>
         await apicon.Log("Let me just share my screen here. Okay, can you all see a browser window?",
 12, 20);
 
-        await apicon.GetInterestingMessage();
+        var msgresult=await apicon.GetInterestingMessage();
 
 
     }

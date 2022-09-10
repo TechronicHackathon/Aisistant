@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Services;
 public interface IWikiAPI
 {
-    public Task<string> GetArticleFromSearch(string searchQuery);
+    public Task<Tuple<string,string>> GetArticleFromSearch(string searchQuery);
 
 }
 public class WikiArticleTextSample
@@ -34,7 +34,7 @@ public class WikiAPI : IWikiAPI
         this.apiKey = apiKey;
     }
 
-    public async Task<string> GetArticleFromSearch(string searchQuery)
+    public async Task<Tuple<string,string>> GetArticleFromSearch(string searchQuery)
     {
         WikiSearcher searcher = new();
         WikiSearchSettings searchSettings = new() { RequestId = $"Request ID{new Random().NextInt64(0, 100)}", ResultLimit = 1, ResultOffset = 0, Language = "en" };
@@ -45,9 +45,9 @@ public class WikiAPI : IWikiAPI
             var title = result.Title;
 
             var body = await getArticleText(title);
-            return body;
+            return Tuple.Create(body,title);
         }
-        return "";
+        return Tuple.Create("","");;
     }
     private int getHeadingLevel(string header)
     {
