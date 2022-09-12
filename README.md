@@ -1,6 +1,15 @@
 # Aisistant
 for hackathon
 
+## Prerequeisites
+
+- Netcore 6 SDK
+- npm
+- browserify
+- working webcam and microphone
+- RevAI API key
+- CoHere API key
+
 ## Building
 from the wwwroot/js directory:
 ```
