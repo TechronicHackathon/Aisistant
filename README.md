@@ -5,7 +5,7 @@ for hackathon
 from the wwwroot/js directory:
 ```
 cd wwwroot/js
-npm init
+npm install
 browserify aiagent.js --s aiagent -o bundle.js
 ```
 
