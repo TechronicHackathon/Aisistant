@@ -16,6 +16,15 @@ for hackathon
 - Download VSCode or Visual Studio: https://code.visualstudio.com
 - VSCode will prompt you to install dotnet 6 extensions to help with formatting/code completion, etc, accept and install these
 
+### Env file
+
+The application uses a secret .env file with API keys. You should have a unique API key from CoHere playground and RevAI labs
+Once you have these keys, create a file called ".env" in the root of your project, and add it as below:
+
+```
+TESTAPIKEY=<cohereAPI>
+TESTAPIKEY2=<revLabsKey>
+```
 ## Building
 from the wwwroot/js directory:
 ```
