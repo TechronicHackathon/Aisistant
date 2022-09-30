@@ -20,8 +20,8 @@ for hackathon
 
 The application uses a secret .env file with API keys. You should have a unique API key from CoHere playground and RevAI labs
 Once you have these keys, create a file called ".env" in the root of your project, and add it as below.
-Cohere: https://os.cohere.ai
-Rev.ai: https://www.rev.ai/access-token
+- Cohere: https://os.cohere.ai
+- Rev.ai: https://www.rev.ai/access-token
 
 **For the hackathon there should not be any cost for these keys**
 ```
