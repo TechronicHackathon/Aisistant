@@ -27,7 +27,8 @@
           "AWSLambda_FullAccess"
         ],
         "Environment": {
-          "Variables": {}
+          "Variables": {
+          }
         },
         "Events": {
           "ProxyResource": {
