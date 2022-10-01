@@ -118,13 +118,13 @@ fabric.util.requestAnimFrame(async function render() {
         //mask = await bodyPix.toMask(segmentation, { r: 255, g: 255, b: 255, a: 255 }, { r: 255, g: 255, b: 255, a: 0 }, false);
         canvasCam.getContext("2d").clearRect(0, 0, canvasCam.width, canvasCam.height);
        // //canvasCam.getContext("2d").globalAlpha = 0.2;
-        canvasCam.getContext("2d").globalCompositeOperation = "source-over";
+        //canvasCam.getContext("2d").globalCompositeOperation = "source-over";
        // bodyPix.drawMask(canvasCam, canvasCam, mask, 1, .2, 0);
-        canvasCam.getContext("2d").globalCompositeOperation = "source-in";
+        canvasCam.getContext("2d").globalCompositeOperation = "source-over";
         canvasCam.getContext("2d").drawImage(webcam, 0, 0);
 
-    } catch {
-
+    } catch (exc){
+        console.log(exc);
     }
     fcanvas.renderAll();
 
