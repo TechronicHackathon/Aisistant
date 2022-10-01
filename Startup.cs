@@ -86,6 +86,7 @@ public class Startup
             12, 20);
 
                     var msgresult = await apicon.GetInterestingMessage();
+                    
                 }
                 catch (Exception ex)
                 {

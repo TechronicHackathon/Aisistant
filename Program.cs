@@ -9,9 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddTransient<Aisistant.Controllers.ApiContoller>();
 var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services); // calling ConfigureServices method
+// builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+// {
+//     serverOptions.Listen(System.Net.IPAddress.Any, 5001, listenOptions =>
+//     {
+//         listenOptions.UseHttps();
+//     });
+// });
 var app = builder.Build();
 await startup.Configure(app, builder.Environment); // calling Configure method
 
-// Configure the HTTP request pipeline.
 
 
