@@ -39,7 +39,7 @@ public class WikiAPI : IWikiAPI
         WikiSearcher searcher = new();
         WikiSearchSettings searchSettings = new() { RequestId = $"Request ID{new Random().NextInt64(0, 100)}", ResultLimit = 1, ResultOffset = 0, Language = "en" };
         WikiSearchResponse response = searcher.Search(searchQuery, searchSettings);
-        if (response.WasSuccessful)
+        if (response.WasSuccessful && response.Query.SearchResults.Count()>0)
         {
             var result = response.Query.SearchResults[0];
             var title = result.Title;

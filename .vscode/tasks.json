@@ -36,6 +36,20 @@
                 "${workspaceFolder}/Aisistant.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "deploy aws",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "lambda",
+                "deploy-serverless",
+                "-sb aisistant-hackathon",
+                "-t serverless.template",
+                "-sn default"
+            ],
+            "problemMatcher": "$msCompile"
         }
+
     ]
 }

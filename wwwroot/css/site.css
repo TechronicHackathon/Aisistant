@@ -15,4 +15,29 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: rgb(23, 42, 57);
+}
+
+.navbar-custom{
+  margin-top: 0px;
+  margin-bottom: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-family: 'JelleeBold';
+  font-size: 6rem;
+  background: linear-gradient(217deg, rgba(255, 0, 0, 0.8) 13.03%, rgba(255, 0, 0, 0) 70.71%),
+  linear-gradient(127deg, rgba(30, 255, 30, 0.8), rgba(0, 255, 0, 0) 70.71%),
+  linear-gradient(336deg, rgba(0, 0, 255, 0.8) 53.36%, rgba(0, 0, 255, 0) 70.71%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
+.popup-smiley{
+  font-size: xxx-large;
+    height: 0px;
+    position: relative;
+    top: -0.8em;
+    left: -0.6em;
+    width: 0.4em;
 }

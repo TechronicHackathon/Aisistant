@@ -1,7 +1,7 @@
 const revai = require('revai-node-sdk');
-
 const token = revaikey;
-
+const fabricjs = fabric;
+let $;
 // initialize client with audio configuration and access token
 const audioConfig = new revai.AudioConfig(
     /* contentType */ "audio/x-raw",
@@ -22,9 +22,15 @@ const micConfig = {
 };
 
 let streamingClient;
+let captions = new fabricjs.Text("");
+captions.top = 1000;
+captions.left = 33;
+captions.fill = "white";
+captions.backgroundColor = "black";
+captions.fontSize = 35;
 
-
-async function startAIAgent() {
+async function startAIAgent(jquery) {
+  $ = jquery;
   console.log("starting AI");
   var client = new revai.RevAiStreamingClient(token, audioConfig);
 
@@ -81,22 +87,75 @@ async function startAIAgent() {
   });
 
   setupAudioContext(micMediaSource);
-
+  fcanvas.add(captions);
 
   // Forcibly ends the streaming session
   // stream.end();
+}
+function showUserMessage(htmlMessage) {
+  let newToast = $(htmlMessage);
+  $(".toast-container").append(newToast);
+  newToast.toast("show");
+}
+
+function getInterestingMsg() {
+  $.get("/apiview/GetInterestingMessage").done(
+    (result) => {
+      if (result.type != null) console.log(result);
+      else showUserMessage(result);
+    });
+}
+function logToServer(lastSentence, startT_S, endT_S) {
+
+  $.ajax({
+    url: "/api/Log",
+    type: "POST",
+    dataType: "json", // expected format for response
+    contentType: "application/json", // send as JSON
+    data: JSON.stringify({ text: lastSentence, startT_S: startT_S, endT_S: endT_S }),
+
+    complete: function () {
+      //called when complete
+    },
+
+    success: function (dat) {
+      //called when successful
+      console.log(dat);
+      var delaytime = (Math.random() * 5) + 5;
+      setTimeout(getInterestingMsg, 1000 * delaytime);
+    },
+
+    error: function (dat) {
+      //called when there is an error
+      console.log(dat);
+
+    },
+  });
+
 }
 function processTranscription(transData) {
   //"{\"type\":\"final\",\"ts\":6.67,\"end_ts\":9.31,
   //\"elements\":[{\"type\":\"text\",\"value\":\"Test\",\"ts\":6.67,\"end_ts\":7.16,\"confidence\":0.97},{\"type\":\"punct\",\"value\":\" \"},{\"type\":\"text\",\"value\":\"one\",\"ts\":7.16,\"end_ts\":7.4,\"confidence\":0.87},{\"type\":\"punct\",\"value\":\",\"},{\"type\":\"punct\",\"value\":\" \"},{\"type\":\"text\",\"value\":\"two\",\"ts\":7.4,\"end_ts\":7.68,\"confidence\":0.97},{\"type\":\"punct\",\"value\":\",\"},{\"type\":\"punct\",\"value\":\" \"},{\"type\":\"text\",\"value\":\"test\",\"ts\":7.68,\"end_ts\":8.0,\"confidence\":0.97},{\"type\":\"punct\",\"value\":\" \"},{\"type\":\"text\",\"value\":\"one\",\"ts\":8.0,\"end_ts\":8.32,\"confidence\":0.78},{\"type\":\"punct\",\"value\":\",\"},{\"type\":\"punct\",\"value\":\" \"},{\"type\":\"text\",\"value\":\"two\",\"ts\":8.32,\"end_ts\":8.56,\"confidence\":0.97},{\"type\":\"punct\",\"value\":\".\"}]}" = $5
   if (transData.type == "final") {
-    let lastSentence="";
-    for(let i=0;i<transData.elements.length;i++){
-      lastSentence+=transData.elements[i].value;
+    let lastSentence = "";
+    for (let i = 0; i < transData.elements.length; i++) {
+      lastSentence += transData.elements[i].value;
     }
     console.log(lastSentence);
+    captions.text = lastSentence;
+    logToServer(lastSentence, transData.ts, transData.end_ts);
+    //displaycaption
+
+  } else if (transData.type == "partial") {
+    let lastWord = "";
+    for (let i = 0; i < transData.elements.length; i++) {
+      lastWord += transData.elements[i].value + " ";
+    }
+    console.log(lastWord);
+    captions.text = lastWord;
 
   }
+
 }
 var audioContext;
 function setupAudioContext(audioStreamID) {

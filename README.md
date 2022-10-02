@@ -45,3 +45,8 @@ The "Controllers" directory is where the API controllers live. Currently it is j
 The "Services" directory is the API controllers for talking to the CoHere API and Wikipedia
 
 The "Pages" folder has the HTML with Razor syntax for creating front-end UI
+
+## Deploy
+```
+dotnet lambda  deploy-serverless -sb aisistant-hackathon -t serverless.template -sn default
+```
