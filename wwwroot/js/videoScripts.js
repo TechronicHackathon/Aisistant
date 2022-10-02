@@ -162,7 +162,7 @@ async function loadScreenCapture(){
     screenSprite.width = 1920;
     fcanvas.add(screenSprite);
     screenSprite.sendToBack();
-    await aiagent.startAIAgent();
+    await aiagent.startAIAgent($);
 
 
 }

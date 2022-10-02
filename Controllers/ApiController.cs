@@ -39,9 +39,14 @@ public class ApiController : ControllerBase
 
         return new JsonResult(ret);
     }
-
+    public class LogObject
+    {
+        public string? text { get; set; }
+        public float? startT_S { get; set; }
+        public float? endT_S { get; set; }
+    }
     [HttpPost]
-    public async Task<ActionResult> Log(string? text, int? startT_S, int? endT_S)
+    public async Task<ActionResult> Log(LogObject logEntry)
     {
         var sessionID = Sessions.GetSessionID(HttpContext);
 
@@ -49,13 +54,13 @@ public class ApiController : ControllerBase
         {
             sessionID = sessionID,
             timestamp = DateTime.UtcNow,
-            chatMessage = text,
-            startT_S = (int)startT_S,
-            endT_S = (int)endT_S,
+            chatMessage = logEntry.text,
+            startT_S = (int)logEntry.startT_S,
+            endT_S = (int)logEntry.endT_S,
             stale = false,
             type = "Log"
         });
-        dBContext.SaveChanges();
+        await dBContext.SaveChangesAsync();
         //var allMessages = dBContext.SessionTranscript.ToList();
 
         var ret = new
@@ -71,30 +76,72 @@ public class ApiController : ControllerBase
         int retries = 0;
 
         var sessionID = Sessions.GetSessionID(HttpContext);
-        var relevantParagraph = dBContext.SessionTranscript.Where(st => st.sessionID == sessionID && st.stale == false);
-    retry:
-        var keywordsList = await cohereAPI.GetKeywords(String.Join('\n', relevantParagraph.Select(st => st.chatMessage)));
-        var article = await wikiAPI.GetArticleFromSearch(keywordsList);
-        if (article.Item1 == null)
+        var relevantParagraph = dBContext.SessionTranscript.Where(st => st.sessionID == sessionID && st.stale == false).OrderBy(st => st.startT_S).ToList();
+        foreach (var entry in relevantParagraph)
         {
-            retries++;
-            if (retries > 3) return new JsonResult(new { status = "Failed" });
-            goto retry;
+            entry.stale = true;
+        }
+        await dBContext.SaveChangesAsync();
+        try
+        {
+            var inputPara = String.Join('\n', relevantParagraph.Select(st => st.chatMessage));
+
+            if (relevantParagraph.Count() == 0)
+            {
+                return new JsonResult(new
+                {
+                    type = "Error",
+                    input = inputPara,
+                    title = "",
+                    key = "",
+                    text = ""
+                });
+            }
+        retry:
+            var keywordsList = await cohereAPI.GetKeywords(inputPara);
+            var article = await wikiAPI.GetArticleFromSearch(keywordsList);
+            if (article.Item1 == null)
+            {
+                retries++;
+                if (retries > 3) goto ErrorResult;
+                goto retry;
+
+            }
+            var parsedDoc = await wikiAPI.QDParser(article.Item1.Split("\n=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries), "Summary", 0, 0, new Dictionary<string, string>());
+            //var allMessages = dBContext.SessionTranscript.ToList();
+            var mostSimilarKey = await cohereAPI.FindMostSimilarPhrase(keywordsList, parsedDoc.Keys.ToList());
+            var summarizedText = await cohereAPI.GetSummary(parsedDoc[mostSimilarKey]);
+ 
+            var ret = new
+            {
+                type = "Summary",
+                input = inputPara,
+                title = article.Item2,
+                key = mostSimilarKey,
+                text = summarizedText
+            };
+            return new JsonResult(ret);
 
         }
-        var parsedDoc = await wikiAPI.QDParser(article.Item1.Split("\n=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries), "Summary", 0, 0, new Dictionary<string, string>());
-        //var allMessages = dBContext.SessionTranscript.ToList();
-        var mostSimilarKey = await cohereAPI.FindMostSimilarPhrase(keywordsList, parsedDoc.Keys.ToList());
-        var summarizedText = await cohereAPI.GetSummary(parsedDoc[mostSimilarKey]);
-        var ret = new
+        catch (Exception ex)
         {
-            type = "Summary",
-            title = article.Item2,
-            key = mostSimilarKey,
-            text = summarizedText
-        };
+            Console.WriteLine(ex.ToString());
+        }
+        ErrorResult:
+        foreach (var entry in relevantParagraph)
+        {
+            entry.stale = false;
+        }
+        await dBContext.SaveChangesAsync();
 
-        return new JsonResult(ret);
+        return new JsonResult(new
+        {
+            type = "Error",
+            input = "",
+            title = "",
+            key = "",
+            text = ""
+        });
     }
 
 }
