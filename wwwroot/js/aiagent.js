@@ -99,7 +99,7 @@ function showUserMessage(htmlMessage) {
 }
 
 function getInterestingMsg() {
-  $.get("/apiview/GetInterestingMessage").done(
+  $.get("apiview/GetInterestingMessage").done(
     (result) => {
       if (result.type != null) console.log(result);
       else showUserMessage(result);
@@ -108,7 +108,7 @@ function getInterestingMsg() {
 function logToServer(lastSentence, startT_S, endT_S) {
 
   $.ajax({
-    url: "/api/Log",
+    url: "api/Log",
     type: "POST",
     dataType: "json", // expected format for response
     contentType: "application/json", // send as JSON
